@@ -5,18 +5,63 @@ import sys
 import os
 import getopt
 import linecache
+import pickle
 from nltk.stem.porter import PorterStemmer
 import Dictionary
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
-    dictionary = Dictionary(output_file_dictionary)
-    postings = Postings(output_file_postings)
+    # dictionary = Dictionary(output_file_dictionary)
+    # postings = Postings(output_file_postings)
+    dictionary = {}
 
-    all_terms = []
+    #Store the terms in a dictionary of {word: set containing the postins}
     for file in files:
-        all_terms.extend(process_file(input_directory, file))
+        terms_in_file = process_file(input_directory, file)
+        for term in terms_in_file:
+            if term not in dictionary:
+                dictionary[term] = {int(file)}
+            else:
+                dictionary[term].add(int(file))
     
+    process_dictionary(dictionary, output_file_dictionary, output_file_postings)
+    dictionary = deserialize_dictionary(output_file_dictionary)
+    posting = get_posting_for_term('dificulti', dictionary, output_file_postings)
+    print(posting)
+
+def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
+    dictionary_to_be_saved = save_to_postings(dictionary, output_file_postings)
+    
+    with open(output_file_dictionary, 'w') as fr:
+        pickle.dump(dictionary_to_be_saved, fr)
+    
+def deserialize_dictionary(dictionary_file_path):
+    with open(dictionary_file_path) as f:
+        dictionary = pickle.load(f)
+    return dictionary
+
+def get_posting_for_term(term, dictionary, postings_file_path):
+    (offset, length) = dictionary[term]
+    
+    with open(postings_file_path, 'r') as f:
+        f.seek(offset)
+        posting_byte = f.read(length)
+        posting_list = pickle.loads(posting_byte)
+    return posting_list
+
+def save_to_postings(dictionary, output_file_postings):
+    dictionary_to_be_saved = {}
+    current_pointer = 0
+    with open(output_file_postings, 'w') as f:
+        for k, v in dictionary.iteritems():
+            sorted_posting = sorted(list(v))
+            f.write(pickle.dumps(sorted_posting))
+            byte_size = f.tell() - current_pointer
+            dictionary_to_be_saved[k] = (current_pointer, byte_size)
+            current_pointer = f.tell()
+    
+    return dictionary_to_be_saved
+
 '''
 process a file and return a list of all terms in that file
 '''
@@ -47,7 +92,7 @@ process a sentence and return a list of all terms in that sentence
 Stemmer is done using NLTK's PorterStemmer
 '''
 def process_sentence(sentence):
-    words = nltk.word_tokenize()
+    words = nltk.word_tokenize(sentence)
     all_terms = []
     stemmer = PorterStemmer()
     for word in words:
@@ -92,3 +137,5 @@ for o, a in opts:
 if input_directory == None or output_file_postings == None or output_file_dictionary == None:
     usage()
     sys.exit(2)
+
+index(input_directory, output_file_dictionary, output_file_postings)
