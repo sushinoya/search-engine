@@ -29,7 +29,8 @@ def index(input_directory, output_file_dictionary, output_file_postings):
     print(posting)
 
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
-    dictionary_to_be_saved = save_to_postings(dictionary, output_file_postings)
+    dictionary_to_be_saved = \
+        save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
     
     with open(output_file_dictionary, 'w') as fr:
         pickle.dump(dictionary_to_be_saved, fr)
@@ -44,11 +45,11 @@ def get_posting_for_term(term, dictionary, postings_file_path):
     
     with open(postings_file_path, 'r') as f:
         f.seek(offset)
-        posting_byte = f.read(length)
-        posting_list = pickle.loads(posting_byte)
+        posting_data_bytes = f.read(length)
+        posting_list = pickle.loads(posting_data_bytes)
     return posting_list
 
-def save_to_postings(dictionary, output_file_postings):
+def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     dictionary_to_be_saved = {}
     current_pointer = 0
     with open(output_file_postings, 'w') as f:
@@ -114,24 +115,25 @@ def usage():
 
 input_directory = output_file_dictionary = output_file_postings = None
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'i:d:p:')
-except getopt.GetoptError, err:
-    usage()
-    sys.exit(2)
-    
-for o, a in opts:
-    if o == '-i': # input directory
-        input_directory = a
-    elif o == '-d': # dictionary file
-        output_file_dictionary = a
-    elif o == '-p': # postings file
-        output_file_postings = a
-    else:
-        assert False, "unhandled option"
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'i:d:p:')
+    except getopt.GetoptError, err:
+        usage()
+        sys.exit(2)
         
-if input_directory == None or output_file_postings == None or output_file_dictionary == None:
-    usage()
-    sys.exit(2)
+    for o, a in opts:
+        if o == '-i': # input directory
+            input_directory = a
+        elif o == '-d': # dictionary file
+            output_file_dictionary = a
+        elif o == '-p': # postings file
+            output_file_postings = a
+        else:
+            assert False, "unhandled option"
+            
+    if input_directory == None or output_file_postings == None or output_file_dictionary == None:
+        usage()
+        sys.exit(2)
 
-index(input_directory, output_file_dictionary, output_file_postings)
+    index(input_directory, output_file_dictionary, output_file_postings)
