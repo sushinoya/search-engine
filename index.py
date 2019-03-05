@@ -10,11 +10,13 @@ from nltk.stem.porter import PorterStemmer
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
-    dictionary = {}
+    dictionary = {'': set()}
 
     #Store the terms in a dictionary of {word: set containing the postins}
     for file in files:
         terms_in_file = process_file(input_directory, file)
+        dictionary[''].add(int(file)) #store all postings with a key of empty string
+
         for term in terms_in_file:
             if term not in dictionary:
                 dictionary[term] = {int(file)}
