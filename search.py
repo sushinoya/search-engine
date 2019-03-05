@@ -54,7 +54,8 @@ def parse_postfix(postfix_expression):
 
 #get all the postings
 def get_superset():
-
+    dictionary = deserialize_dictionary(dictionary_file)
+    return get_posting_for_term('', dictionary, postings_file)
 
 def evaluate_not(posting):
     superset = get_superset()
