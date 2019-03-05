@@ -7,12 +7,9 @@ import getopt
 import linecache
 import pickle
 from nltk.stem.porter import PorterStemmer
-import Dictionary
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
-    # dictionary = Dictionary(output_file_dictionary)
-    # postings = Postings(output_file_postings)
     dictionary = {}
 
     #Store the terms in a dictionary of {word: set containing the postins}
@@ -25,8 +22,10 @@ def index(input_directory, output_file_dictionary, output_file_postings):
                 dictionary[term].add(int(file))
     
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
+
+    #for testing
     dictionary = deserialize_dictionary(output_file_dictionary)
-    posting = get_posting_for_term('dificulti', dictionary, output_file_postings)
+    posting = get_posting_for_term('price', dictionary, output_file_postings)
     print(posting)
 
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
@@ -108,9 +107,6 @@ def process_word(word, stemmer):
     #https://www.nltk.org/_modules/nltk/stem/porter.html
     #so we only need to stem and don't need to worry about case-folding
     return stemmer.stem(word)
-
-
-
 
 
 def usage():
