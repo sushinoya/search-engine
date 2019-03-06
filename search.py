@@ -7,16 +7,7 @@ import pickle
 from time import time
 from shunting_yard import shunting_yard
 from postings_eval import evaluate_not, evaluate_or, evaluate_and
-from utils import deserialize_dictionary, clock_and_execute
-
-def get_postings_list_for_term(term, dictionary, postings_file_path):
-    offset, length = dictionary[term]
-    
-    with open(postings_file_path, 'r') as f:
-        f.seek(offset)
-        posting_byte = f.read(length)
-        posting_list = pickle.loads(posting_byte)
-    return posting_list
+from utils import deserialize_dictionary, clock_and_execute, get_postings_for_term
 
 def transform_postfix(postfix_expression):
     dictionary = deserialize_dictionary(dictionary_file)
@@ -24,7 +15,7 @@ def transform_postfix(postfix_expression):
     for i in range(len(postfix_expression)):
         if postfix_expression[i] not in operators:
             postfix_expression[i] = \
-                get_postings_list_for_term(postfix_expression[i], dictionary, postings_file)
+                get_postings_for_term(postfix_expression[i], dictionary, postings_file)
     return postfix_expression
 
 '''
@@ -54,7 +45,7 @@ def parse_postfix(postfix_expression):
 #get all the postings
 def get_superset():
     dictionary = deserialize_dictionary(dictionary_file)
-    return get_postings_list_for_term('', dictionary, postings_file)
+    return get_postings_for_term('', dictionary, postings_file)
 
 
 def usage():
