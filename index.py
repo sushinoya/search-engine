@@ -7,7 +7,7 @@ import getopt
 import linecache
 import pickle
 from nltk.stem.porter import PorterStemmer
-from utils import deserialize_dictionary, save_to_disk
+from utils import deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
@@ -24,12 +24,8 @@ def index(input_directory, output_file_dictionary, output_file_postings):
             else:
                 dictionary[term].add(int(file))
     
+    # generate_occurences_file(dictionary) # Used to generate a file of human readable postings and occurences
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
-
-    #for testing
-    dictionary = deserialize_dictionary(output_file_dictionary)
-    posting = get_posting_for_term('price', dictionary, output_file_postings)
-    print(posting)
 
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
     dictionary_to_be_saved = \
@@ -132,4 +128,5 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
-    index(input_directory, output_file_dictionary, output_file_postings)
+    print("Indexing...")
+    clock_and_execute(index, input_directory, output_file_dictionary, output_file_postings)

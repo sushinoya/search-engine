@@ -62,13 +62,15 @@ def usage():
 
 
 # MAIN FUNCTION
-def get_postings_for_query(query): 
-    return parse_postfix(shunting_yard(query))
+def get_postings_for_queries(file_of_queries):
+    queries = [line.rstrip('\n') for line in open(file_of_queries)]
+    for query in queries:
+        output = parse_postfix(shunting_yard(query))
+        with open(file_of_output, 'a') as file:
+            file.write(' '.join(map(str, output)) + '\n')
+
 
 if __name__ == "__main__":
-
-    print(shunting_yard("bill OR Gates AND(vista OR XP) AND NOT mac"))
-
     dictionary_file = postings_file = file_of_queries = output_file_of_results = None
         
     try:
@@ -96,10 +98,5 @@ if __name__ == "__main__":
     # Delete content from the output file
     with open(file_of_output, "w"):
         pass
-
-    queries = [line.rstrip('\n') for line in open(file_of_queries)]
     
-    for query in queries:
-        output = clock_and_execute(get_postings_for_query, query)
-        with open(file_of_output, 'a') as file:
-            file.write(' '.join(map(str, output)) + '\n')
+    clock_and_execute(get_postings_for_queries, file_of_queries)
