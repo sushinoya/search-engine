@@ -84,6 +84,11 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
+    #for testing
+    dictionary = deserialize_dictionary(dictionary_file)
+    posting = get_postings_for_term('price', dictionary, postings_file)
+    print(posting)
+
     # Delete content from the output file
     with open(file_of_output, "w"):
         pass

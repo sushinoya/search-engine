@@ -26,11 +26,6 @@ def index(input_directory, output_file_dictionary, output_file_postings):
     
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
 
-    #for testing
-    dictionary = deserialize_dictionary(output_file_dictionary)
-    posting = get_postings_for_term('price', dictionary, output_file_postings)
-    print(posting)
-
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
     dictionary_to_be_saved = \
         save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
