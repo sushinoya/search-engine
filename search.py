@@ -47,6 +47,20 @@ def get_superset():
     dictionary = deserialize_dictionary(dictionary_file)
     return get_postings_for_term('', dictionary, postings_file)
 
+def test_index():
+    print('Testing indexing: ')
+    dictionary = deserialize_dictionary(dictionary_file)
+    actual = get_postings_for_term('price', dictionary, postings_file)
+    expected = [1, 5, 10]
+    print(actual == expected)
+    print('\n')
+    
+def test_shunting_yard():
+    print('Testing shunting yard:')
+    actual = shunting_yard("bill OR Gates AND(vista OR XP) AND NOT mac")
+    expected = ['bill', 'Gates', 'vista', 'XP', 'OR', 'AND', 'mac', 'NOT', 'AND', 'OR']
+    print(actual == expected)
+    print('\n')
 
 def usage():
     print "usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results"
@@ -57,9 +71,6 @@ def get_postings_for_query(query):
     return parse_postfix(shunting_yard(query))
 
 if __name__ == "__main__":
-
-    print(shunting_yard("bill OR Gates AND(vista OR XP) AND NOT mac"))
-
     dictionary_file = postings_file = file_of_queries = output_file_of_results = None
         
     try:
@@ -84,10 +95,9 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
-    #for testing
-    dictionary = deserialize_dictionary(dictionary_file)
-    posting = get_postings_for_term('price', dictionary, postings_file)
-    print(posting)
+    #Test indexing
+    test_index()
+    test_shunting_yard()
 
     # Delete content from the output file
     with open(file_of_output, "w"):
