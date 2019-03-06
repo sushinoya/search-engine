@@ -23,7 +23,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
             else:
                 dictionary[term].add(int(file))
     
-    # generate_occurences_file(dictionary) # Used to generate a file of human readable postings and occurences
+    generate_occurences_file(dictionary) # Used to generate a file of human readable postings and occurences
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
 
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
@@ -85,7 +85,7 @@ def process_sentence(sentence):
 stems a word with the required stemmer
 '''
 def process_word(word): 
-    return stem(word)
+    return stem(word).lower()
 
 def usage():
     print "usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file"
