@@ -1,5 +1,12 @@
 #!/bin/bash
-directory_of_documents=reuters/training
+
+# If --o, use the entire reuters data
+if [[ $* == *--o* ]]
+then
+  directory_of_documents=reuters_original/training
+else
+  directory_of_documents=reuters_chunk/training
+fi
 dictionary_file=dictionary.txt
 postings_file=postings.txt
 file_of_queries=query.txt
