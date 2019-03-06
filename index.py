@@ -12,7 +12,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
     dictionary = {'': set()}
 
-    #Store the terms in a dictionary of {word: set containing the postins}
+    # Store the terms in a dictionary of {word: set containing the postins}
     for file in files:
         terms_in_file = process_file(input_directory, file)
         dictionary[''].add(int(file)) #store all postings with a key of empty string
@@ -23,12 +23,15 @@ def index(input_directory, output_file_dictionary, output_file_postings):
             else:
                 dictionary[term].add(int(file))
     
-    generate_occurences_file(dictionary) # Used to generate a file of human readable postings and occurences
+    # Generates a file of human readable postings and occurences. Maily used for debugging
+    # Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
+    generate_occurences_file(dictionary)
+
+    # Saves the postings file and dictionary file to disk
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
 
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
-    dictionary_to_be_saved = \
-        save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
+    dictionary_to_be_saved = save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
     save_to_disk(dictionary_to_be_saved, output_file_dictionary)
 
 def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
@@ -45,24 +48,21 @@ def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     return dictionary_to_be_saved
 
 '''
-process a file and return a list of all terms in that file
+Process a file and return a list of all terms in that file
 '''
 def process_file(input_directory, file):
-        line_num = 1
-        line = linecache.getline(os.path.join(input_directory, file), line_num)
-        all_terms = []
-        while line != '':
-            all_terms.extend(process_line(line))
-            line_num += 1
-            line = line = linecache.getline(os.path.join(input_directory, file), line_num)
-        
-        return all_terms
-            
+    with open(os.path.join(input_directory, file), 'r') as content_file:
+        text = content_file.read().replace('\n', ' ')
+        return process_text(text)
+
+
 '''
-process a line and return a list of all terms in that line
+Process a line and return a list of all terms in that line
 '''
-def process_line(line):
-    sentences = nltk.sent_tokenize(line)
+
+
+def process_text(text):
+    sentences = nltk.sent_tokenize(text)
     all_terms = []
     for sentence in sentences:
         all_terms.extend(process_sentence(sentence))
@@ -70,19 +70,16 @@ def process_line(line):
     return all_terms
 
 '''
-process a sentence and return a list of all terms in that sentence
+Process a sentence and return a list of all terms in that sentence
 Stemmer is done using NLTK's PorterStemmer
 '''
 def process_sentence(sentence):
     words = nltk.word_tokenize(sentence)
-    all_terms = []
-    for word in words:
-        all_terms.append(process_word(word))
-    
-    return all_terms
+    return [process_word(word) for word in words]
+
 
 '''
-stems a word with the required stemmer
+Stems a word with the required stemmer
 '''
 def process_word(word): 
     return stem(word).lower()
