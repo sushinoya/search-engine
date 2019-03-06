@@ -13,8 +13,13 @@ file_of_queries=tests/input1.txt
 output_of_results_file=output.txt
 expected_output_file=tests/expected_output1.txt
 
-python index.py -i $directory_of_documents -d $dictionary_file -p $postings_file
-python search.py -d $dictionary_file -p $postings_file -q $file_of_queries -o $output_of_results_file
+if [[ $* == *-no-index* ]]
+then
+  python search.py -d $dictionary_file -p $postings_file -q $file_of_queries -o $output_of_results_file
+else
+  python index.py -i $directory_of_documents -d $dictionary_file -p $postings_file
+  python search.py -d $dictionary_file -p $postings_file -q $file_of_queries -o $output_of_results_file
+fi
 
 cmp --silent $output_of_results_file $expected_output_file && echo '### Test Passed: Files Are Identical! ###' || echo '### Failed: Files Are Different! ###'
 echo "Lines which don't match are:"
