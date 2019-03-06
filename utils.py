@@ -14,6 +14,9 @@ def deserialize_dictionary(dictionary_file_path):
 	return dictionary
 
 def get_postings_for_term(term, dictionary, postings_file_path):
+    if term not in dictionary: 
+        return []
+
     offset, length = dictionary[term]
     
     with open(postings_file_path, 'r') as f:

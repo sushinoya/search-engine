@@ -82,7 +82,7 @@ def process_sentence(sentence):
 Stems a word with the required stemmer
 '''
 def process_word(word): 
-    return stem(word).lower()
+    return stem(word)
 
 def usage():
     print "usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file"
