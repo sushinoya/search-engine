@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from collections import defaultdict
 
 # Shunting-yard
@@ -6,8 +8,8 @@ operators = op_not, op_and, op_or = "NOT", "AND", "OR"
 parens = left_par, right_par = "(", ")"
 normalisation_rules = {token: " {} ".format(token) for token in parens}
 precedence = defaultdict(lambda: -1, {
-    op_not: 0,
-    op_and: 0,
+    op_not: 2,
+    op_and: 1,
     op_or: 0
 })
 
@@ -55,4 +57,4 @@ def shunting_yard(infix):
 
     if op_stack:
         output.extend(reversed(op_stack))
-    return ' '.join(output)
+    return output
