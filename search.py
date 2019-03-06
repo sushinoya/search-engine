@@ -19,8 +19,8 @@ def transform_postfix(postfix_expression):
     return postfix_expression
 
 '''
-postfix: a list of post expression
-parses the postfix_expression and get the result of the search engine
+Postfix: a list of post expression
+Parses the postfix_expression and get the result of the search engine
 '''
 def parse_postfix(postfix_expression):
     postfix_expression = transform_postfix(postfix_expression)
@@ -58,7 +58,7 @@ def get_postings_for_queries(file_of_queries):
         output = parse_postfix(shunting_yard(query))
         with open(file_of_output, 'a') as file:
             file.write(' '.join(map(str, output)) + '\n')
-
+    
 if __name__ == "__main__":
     dictionary_file = postings_file = file_of_queries = output_file_of_results = None
         
