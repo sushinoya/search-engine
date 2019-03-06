@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import re
 import nltk
 import sys
