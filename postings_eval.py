@@ -1,3 +1,5 @@
+import math
+
 def evaluate_not(posting, superset):
     answer = []
     posting_index = 0
@@ -26,47 +28,68 @@ def evaluate_or(postings_1, postings_2):
 
 def list_union(list_1, list_2):
     answer = []
-    list_1_index = 0
-    list_2_index = 0
-    while list_1_index != len(list_1) and list_2_index != len(list_2):
-        if list_1[list_1_index] == list_2[list_2_index]:
-            answer.append(list_1[list_1_index])
-            list_1_index += 1
-            list_2_index += 1
-        elif list_1[list_1_index] < list_2[list_2_index]:
-            answer.append(list_1[list_1_index])
-            list_1_index += 1
+    index_1 = 0
+    index_2 = 0
+    while index_1 != len(list_1) and index_2 != len(list_2):
+        elem_1 = list_1[index_1]
+        elem_2 = list_2[index_2]
+
+        if elem_1 == elem_2:
+            answer.append(elem_1)
+            index_1 += 1
+            index_2 += 1
+        
+        elif elem_1 < elem_2:
+            answer.append(elem_1)
+            index_1 += 1
+        
         else:
-            answer.append(list_2[list_2_index])
-            list_2_index += 1
+            answer.append(elem_2)
+            index_2 += 1
 
-    while list_1_index < len(list_1):
-        answer.append(list_1[list_1_index])
-        list_1_index += 1
+    while index_1 < len(list_1):
+        answer.append(list_1[index_1])
+        index_1 += 1
 
-    while list_2_index < len(list_2):
-        answer.append(list_2[list_2_index])
-        list_2_index += 1
+    while index_2 < len(list_2):
+        answer.append(list_2[index_2])
+        index_2 += 1
 
     return answer
 
 
 def evaluate_and(postings_1, postings_2):
-    return list_intersection(postings_1, postings_2)
+    return list_intersection_with_skips(postings_1, postings_2)
 
 
-def list_intersection(list_1, list_2):
+def list_intersection_with_skips(list_1, list_2):
     answer = []
-    list_1_index = 0
-    list_2_index = 0
-    while list_1_index != len(list_1) and list_2_index != len(list_2):
-        if list_1[list_1_index] == list_2[list_2_index]:
-            answer.append(list_1[list_1_index])
-            list_1_index += 1
-            list_2_index += 1
-        elif list_1[list_1_index] < list_2[list_2_index]:
-            list_1_index += 1
+    index_1 = 0
+    index_2 = 0
+
+    list_1_skip_ptr_len = int(math.sqrt(len(list_1)))
+    list_2_skip_ptr_len = int(math.sqrt(len(list_2)))
+
+    while index_1 != len(list_1) and index_2 != len(list_2):
+        elem_1 = list_1[index_1]
+        elem_2 = list_2[index_2]
+
+        if elem_1 == elem_2:
+            answer.append(elem_1)
+            index_1 += 1
+            index_2 += 1
+        
+        elif elem_1 < elem_2:
+            skip_index = index_1 + list_1_skip_ptr_len
+            if skip_index < len(list_1) and list_1[skip_index] <= elem_2:
+                index_1 = skip_index
+            else:
+                index_1 += 1
         else:
-            list_2_index += 1
+            skip_index = index_2 + list_2_skip_ptr_len
+            if skip_index < len(list_2) and list_2[skip_index] <= elem_1:
+                index_2 = skip_index
+            else:
+                index_2 += 1
 
     return answer
