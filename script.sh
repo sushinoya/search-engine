@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # If --o, use the entire reuters data
-if [[ $* == *--o* ]]
+if [[ $* == *-o* ]]
 then
   directory_of_documents=reuters_original/training
 else
