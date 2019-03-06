@@ -7,7 +7,7 @@ import pickle
 from time import time
 from shunting_yard import shunting_yard
 from postings_eval import evaluate_not, evaluate_or, evaluate_and
-from utils import deserialize_dictionary, clock_and_execute, get_postings_for_term
+from utils import deserialize_dictionary, clock_and_execute, get_postings_for_term, stem
 
 def transform_postfix(postfix_expression):
     dictionary = deserialize_dictionary(dictionary_file)
@@ -15,7 +15,7 @@ def transform_postfix(postfix_expression):
     for i in range(len(postfix_expression)):
         if postfix_expression[i] not in operators:
             postfix_expression[i] = \
-                get_postings_for_term(postfix_expression[i], dictionary, postings_file)
+                get_postings_for_term(stem(postfix_expression[i]), dictionary, postings_file)
     return postfix_expression
 
 '''

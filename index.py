@@ -6,8 +6,7 @@ import os
 import getopt
 import linecache
 import pickle
-from nltk.stem.porter import PorterStemmer
-from utils import deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file
+from utils import deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, stem
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
@@ -77,21 +76,16 @@ Stemmer is done using NLTK's PorterStemmer
 def process_sentence(sentence):
     words = nltk.word_tokenize(sentence)
     all_terms = []
-    stemmer = PorterStemmer()
     for word in words:
-        all_terms.append(process_word(word, stemmer))
+        all_terms.append(process_word(word))
     
     return all_terms
 
 '''
 stems a word with the required stemmer
 '''
-def process_word(word, stemmer):
-    #PorterStemmer internally already does case folding for us
-    #https://www.nltk.org/_modules/nltk/stem/porter.html
-    #so we only need to stem and don't need to worry about case-folding
-    return stemmer.stem(word)
-
+def process_word(word): 
+    return stem(word)
 
 def usage():
     print "usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file"

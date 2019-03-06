@@ -1,5 +1,15 @@
 import pickle
 from time import time
+from nltk.stem.porter import PorterStemmer
+
+stemmer = PorterStemmer()
+
+def stem(word):
+    #PorterStemmer internally already does case folding for us
+    #https://www.nltk.org/_modules/nltk/stem/porter.html
+    #so we only need to stem and don't need to worry about case-folding
+    return stemmer.stem(word)
+
 
 def deserialize_dictionary(dictionary_file_path):
 	with open(dictionary_file_path) as f:
