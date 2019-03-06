@@ -1,0 +1,9 @@
+limited OR all AND (month OR exporters) AND humidity
+limited OR to
+to AND under AND total
+NOT month
+NOT to
+four AND to
+flavour
+to AND flavour
+to
