@@ -5,10 +5,7 @@ from nltk.stem.porter import PorterStemmer
 stemmer = PorterStemmer()
 
 def stem(word):
-    #PorterStemmer internally already does case folding for us
-    #https://www.nltk.org/_modules/nltk/stem/porter.html
-    #so we only need to stem and don't need to worry about case-folding
-    return stemmer.stem(word)
+	return stemmer.stem(word).lower()
 
 
 def deserialize_dictionary(dictionary_file_path):
@@ -26,7 +23,7 @@ def get_postings_for_term(term, dictionary, postings_file_path):
     return posting_list
 
 def save_to_disk(obj, file):
-  with open(file, 'w') as fr: pickle.dump(obj, fr)
+  	with open(file, 'w') as fr: pickle.dump(obj, fr)
 
 def clock_and_execute(func, *args):
 	start_time = time()
@@ -39,6 +36,6 @@ def clock_and_execute(func, *args):
 def generate_occurences_file(dictionary):
 	len_dict = {word: len(v) for word, v in dictionary.items()}
 	with open("occurences.txt", 'w') as f:
-			for k, v in sorted(len_dict.items(), key=lambda x: -x[1]):
-					f.write("{}: {} -> {}\n".format(k.ljust(15), str(v).ljust(5), sorted(list(dictionary[k]))))
+		for k, v in sorted(len_dict.items(), key=lambda x: -x[1]):
+			f.write("{}: {} -> {}\n".format(k.ljust(15), str(v).ljust(5), sorted(list(dictionary[k]))))
     
