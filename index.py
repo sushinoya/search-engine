@@ -7,6 +7,7 @@ import getopt
 import linecache
 import pickle
 from nltk.stem.porter import PorterStemmer
+from utils import deserialize_dictionary, save_to_disk
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
@@ -33,14 +34,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
 def process_dictionary(dictionary, output_file_dictionary, output_file_postings):
     dictionary_to_be_saved = \
         save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
-    
-    with open(output_file_dictionary, 'w') as fr:
-        pickle.dump(dictionary_to_be_saved, fr)
-    
-def deserialize_dictionary(dictionary_file_path):
-    with open(dictionary_file_path) as f:
-        dictionary = pickle.load(f)
-    return dictionary
+    save_to_disk(dictionary_to_be_saved, output_file_dictionary)
 
 def get_posting_for_term(term, dictionary, postings_file_path):
     (offset, length) = dictionary[term]
