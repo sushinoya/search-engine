@@ -32,15 +32,6 @@ def process_dictionary(dictionary, output_file_dictionary, output_file_postings)
         save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
     save_to_disk(dictionary_to_be_saved, output_file_dictionary)
 
-def get_posting_for_term(term, dictionary, postings_file_path):
-    (offset, length) = dictionary[term]
-    
-    with open(postings_file_path, 'r') as f:
-        f.seek(offset)
-        posting_data_bytes = f.read(length)
-        posting_list = pickle.loads(posting_data_bytes)
-    return posting_list
-
 def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     dictionary_to_be_saved = {}
     current_pointer = 0
