@@ -6,6 +6,15 @@ def deserialize_dictionary(dictionary_file_path):
 		dictionary = pickle.load(f)
 	return dictionary
 
+def get_postings_for_term(term, dictionary, postings_file_path):
+    offset, length = dictionary[term]
+    
+    with open(postings_file_path, 'r') as f:
+        f.seek(offset)
+        posting_byte = f.read(length)
+        posting_list = pickle.loads(posting_byte)
+    return posting_list
+
 def save_to_disk(obj, file):
   	with open(file, 'w') as fr: pickle.dump(obj, fr)
 
