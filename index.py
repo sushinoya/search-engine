@@ -7,10 +7,11 @@ import getopt
 import linecache
 import pickle
 from utils import deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, stem
+from collections import defaultdict
 
 def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
-    dictionary = {'': set()}
+    dictionary = defaultdict(set)
 
     # Store the terms in a dictionary of {word: set containing the postins}
     for file in files:
@@ -18,10 +19,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
         dictionary[''].add(int(file)) #store all postings with a key of empty string
 
         for term in terms_in_file:
-            if term not in dictionary:
-                dictionary[term] = {int(file)}
-            else:
-                dictionary[term].add(int(file))
+            dictionary[term].add(int(file))
     
     # Generates a file of human readable postings and occurences. Maily used for debugging
     # Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
