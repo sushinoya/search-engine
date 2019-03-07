@@ -6,11 +6,12 @@ import os
 import getopt
 import linecache
 import pickle
-from utils import preprocess_raw_text, deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, preprocess_raw_word
+import math
+from utils import add_skip_pointers, preprocess_raw_text, deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, preprocess_raw_word
 from collections import defaultdict
 
 def index(input_directory, output_file_dictionary, output_file_postings):
-    files = os.listdir(input_directory)
+    files = sorted(os.listdir(input_directory))
     dictionary = defaultdict(set)
 
     # Store the terms in a dictionary of {word: set containing the postings}
@@ -21,9 +22,12 @@ def index(input_directory, output_file_dictionary, output_file_postings):
         for term in terms_in_file:
             dictionary[term].add(int(file))
 
+    # Add skip pointers
+    dictionary = add_skip_pointers(dictionary)
+
     # Generates a file of human readable postings and occurences. Maily used for debugging
     # Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
-    # generate_occurences_file(dictionary)  # Uncomment the next line if needed for debugging
+    generate_occurences_file(dictionary)  # Uncomment the next line if needed for debugging
 
     # Saves the postings file and dictionary file to disk
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
@@ -48,14 +52,13 @@ def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     current_pointer = 0
     with open(output_file_postings, 'w') as f:
         for k, v in dictionary.iteritems():
-            sorted_posting = sorted(list(v)) # v here is a set of document ids
+            sorted_posting = v
             f.write(pickle.dumps(sorted_posting)) # Use pickle to save the posting and write to it
             byte_size = f.tell() - current_pointer
             dictionary_to_be_saved[k] = (current_pointer, byte_size)
             current_pointer = f.tell()
     
     return dictionary_to_be_saved
-
 
 '''
 Process a file and return a list of all terms in that file.

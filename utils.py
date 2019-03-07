@@ -1,7 +1,34 @@
 import pickle
 from time import time
 import re
+import math
 from nltk.stem.porter import PorterStemmer
+
+# SKIP LIST FUNCTIONS
+
+def add_skip_pointers(postings_dict):
+    # Add skip pointers
+    for word, postings in postings_dict.items():
+        postings_list = sorted(list(postings)) if isinstance(postings, set) else postings
+        postings_dict[word] = add_skip_pointers_to_list(postings_list)
+    return postings_dict
+
+
+def add_skip_pointers_to_list(postings_list):
+    skip_len = int(math.sqrt(len(postings_list)))
+    list_with_skips = []
+    for index, doc_id in enumerate(postings_list):
+        skip_pointer_index = index + skip_len
+
+        # Add a skip pointer to the element which is math.sqrt(len) away
+        if skip_pointer_index <= len(postings_list) - 1:
+            list_with_skips.append((doc_id, skip_pointer_index))
+        else:
+            list_with_skips.append((doc_id, len(postings_list) - 1))
+
+    return list_with_skips
+
+
 
 # MARK - TEXT PREPROCESSING FUNCTIONS
 
@@ -91,6 +118,6 @@ def clock_and_execute(func, *args):
 def generate_occurences_file(dictionary):
 	len_dict = {word: len(v) for word, v in dictionary.items()}
 	with open("occurences.txt", 'w') as f:
-		for k, v in sorted(len_dict.items(), key=lambda x: -x[1]):
-			f.write("{}: {} -> {}\n".format(k.ljust(15), str(v).ljust(5), sorted(list(dictionary[k]))))
+		for k, v in sorted(len_dict.items(), key=lambda x: x[1]):
+			f.write("{}: {} -> {}\n".format(k.ljust(15), str(v).ljust(5), dictionary[k]))
     
