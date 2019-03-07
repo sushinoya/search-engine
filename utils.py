@@ -3,6 +3,8 @@ from time import time
 import re
 from nltk.stem.porter import PorterStemmer
 
+# MARK - TEXT PREPROCESSING FUNCTIONS
+
 stemmer = PorterStemmer()
 
 def preprocess_raw_word(word):
@@ -41,17 +43,22 @@ def preprocess_raw_query(query):
 	return query
 
 
-#load the dictionary from dictionary_file_path using pickle
+
+# MARK - FILE I/O FUNCTIONS
+
+# Load the dictionary from dictionary_file_path using pickle
 def deserialize_dictionary(dictionary_file_path):
 	with open(dictionary_file_path) as f:
 		dictionary = pickle.load(f)
 	return dictionary
 
-#takes in a term and dictionary, and generate the posting list
+# Takes in a term and dictionary, and generate the posting list
 def get_postings_for_term(term, dictionary, postings_file_path):
+    # Handle unseen words
     if term not in dictionary: 
         return []
 
+    # Byte offset and length of data chunk in postings file
     offset, length = dictionary[term]
     
     with open(postings_file_path, 'r') as f:
@@ -60,10 +67,17 @@ def get_postings_for_term(term, dictionary, postings_file_path):
         posting_list = pickle.loads(posting_byte)
     return posting_list
 
-#save an object to disk 
+# Save an object to disk 
 def save_to_disk(obj, file):
   	with open(file, 'w') as fr: pickle.dump(obj, fr)
 
+
+
+# MARK - DEBUGGING FUNCTIONS
+
+# This function takes in a function and that functions argumnents and
+# times how long the function execution took. It is used for debugging
+# similar to how timeit is used but we wanted a simpler solution
 def clock_and_execute(func, *args):
 	start_time = time()
 	ret = func(*args)
@@ -72,6 +86,8 @@ def clock_and_execute(func, *args):
 		.format(func.__name__, args, end_time - start_time))
 	return ret
 
+# Generates a file of human readable postings and occurences. Maily used for debugging
+# Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
 def generate_occurences_file(dictionary):
 	len_dict = {word: len(v) for word, v in dictionary.items()}
 	with open("occurences.txt", 'w') as f:
