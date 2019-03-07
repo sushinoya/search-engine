@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import re
 import nltk
 import sys
@@ -9,6 +8,9 @@ from shunting_yard import shunting_yard
 from postings_eval import evaluate_not, evaluate_or, evaluate_and
 from utils import deserialize_dictionary, clock_and_execute, get_postings_for_term, stem
 
+'''
+Replace query terms with their corresponding postings, except for 'AND', 'OR', 'NOT'
+'''
 def transform_postfix(postfix_expression):
     dictionary = deserialize_dictionary(dictionary_file)
     operators = {'AND', 'OR', 'NOT'}

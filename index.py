@@ -12,7 +12,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
     files = os.listdir(input_directory)
     dictionary = {'': set()}
 
-    # Store the terms in a dictionary of {word: set containing the postins}
+    # Store the terms in a dictionary of {word: set containing the postings}
     for file in files:
         terms_in_file = process_file(input_directory, file)
         dictionary[''].add(int(file)) #store all postings with a key of empty string
@@ -34,13 +34,16 @@ def process_dictionary(dictionary, output_file_dictionary, output_file_postings)
     dictionary_to_be_saved = save_to_postings_and_generate_dictionary(dictionary, output_file_postings)
     save_to_disk(dictionary_to_be_saved, output_file_dictionary)
 
+'''
+Save the postings to file and generate the dictionary to be saved later
+'''
 def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     dictionary_to_be_saved = {}
     current_pointer = 0
     with open(output_file_postings, 'w') as f:
         for k, v in dictionary.iteritems():
             sorted_posting = sorted(list(v))
-            f.write(pickle.dumps(sorted_posting))
+            f.write(pickle.dumps(sorted_posting)) #use pickle to save the posting and write to it
             byte_size = f.tell() - current_pointer
             dictionary_to_be_saved[k] = (current_pointer, byte_size)
             current_pointer = f.tell()
@@ -57,10 +60,8 @@ def process_file(input_directory, file):
 
 
 '''
-Process a line and return a list of all terms in that line
+Process a text and return a list of all terms in that text
 '''
-
-
 def process_text(text):
     sentences = nltk.sent_tokenize(text)
     all_terms = []
