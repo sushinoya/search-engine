@@ -6,7 +6,7 @@ import os
 import getopt
 import linecache
 import pickle
-from utils import deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, stem
+from utils import preprocess_raw_text, deserialize_dictionary, save_to_disk, clock_and_execute, generate_occurences_file, preprocess_raw_word
 from collections import defaultdict
 
 def index(input_directory, output_file_dictionary, output_file_postings):
@@ -16,11 +16,11 @@ def index(input_directory, output_file_dictionary, output_file_postings):
     # Store the terms in a dictionary of {word: set containing the postins}
     for file in files:
         terms_in_file = process_file(input_directory, file)
-        dictionary[''].add(int(file)) #store all postings with a key of empty string
+        dictionary['ALL_WORDS_AND_POSTINGS'].add(int(file)) #store all postings with a key of empty string
 
         for term in terms_in_file:
             dictionary[term].add(int(file))
-    
+
     # Generates a file of human readable postings and occurences. Maily used for debugging
     # Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
     generate_occurences_file(dictionary)
@@ -51,7 +51,8 @@ Process a file and return a list of all terms in that file
 def process_file(input_directory, file):
     with open(os.path.join(input_directory, file), 'r') as content_file:
         text = content_file.read().replace('\n', ' ')
-        return process_text(text)
+        preprocessed_text = preprocess_raw_text(text)
+        return process_text(preprocessed_text)
 
 
 '''
@@ -80,7 +81,7 @@ def process_sentence(sentence):
 Stems a word with the required stemmer
 '''
 def process_word(word): 
-    return stem(word)
+    return preprocess_raw_word(word)
 
 def usage():
     print "usage: " + sys.argv[0] + " -i directory-of-documents -d dictionary-file -p postings-file"
