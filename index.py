@@ -57,10 +57,8 @@ def process_file(input_directory, file):
 
 
 '''
-Process a line and return a list of all terms in that line
+Process a text and return a list of all terms in that text
 '''
-
-
 def process_text(text):
     sentences = nltk.sent_tokenize(text)
     all_terms = []
