@@ -1,11 +1,13 @@
 import math
 
+# Superset is all the postings
+# Evaluate_not remove posting from the superset 
 def evaluate_not(posting, superset):
     answer = []
     posting_index = 0
     superset_index = 0
     while posting_index != len(posting) and superset_index != len(superset):
-        if posting[posting_index] == superset[superset_index]:
+        if posting[posting_index] == superset[superset_index]: #ignore postings that are the same
             posting_index += 1
             superset_index += 1
         elif posting[posting_index] < superset[superset_index]:
@@ -25,7 +27,7 @@ def evaluate_not(posting, superset):
 def evaluate_or(postings_1, postings_2):
     return list_union(postings_1, postings_2)
 
-
+# Union two lists together 
 def list_union(list_1, list_2):
     answer = []
     index_1 = 0
@@ -62,6 +64,7 @@ def evaluate_and(postings_1, postings_2):
     return list_intersection_with_skips(postings_1, postings_2)
 
 
+# Use the mergeing algorithm in lecture
 def list_intersection_with_skips(list_1, list_2):
     answer = []
     index_1 = 0

@@ -40,11 +40,14 @@ def preprocess_raw_query(query):
 		query = re.sub(regex, replacement, query)
 	return query
 
+
+#load the dictionary from dictionary_file_path using pickle
 def deserialize_dictionary(dictionary_file_path):
 	with open(dictionary_file_path) as f:
 		dictionary = pickle.load(f)
 	return dictionary
 
+#takes in a term and dictionary, and generate the posting list
 def get_postings_for_term(term, dictionary, postings_file_path):
     if term not in dictionary: 
         return []
@@ -57,6 +60,7 @@ def get_postings_for_term(term, dictionary, postings_file_path):
         posting_list = pickle.loads(posting_byte)
     return posting_list
 
+#save an object to disk 
 def save_to_disk(obj, file):
   	with open(file, 'w') as fr: pickle.dump(obj, fr)
 
