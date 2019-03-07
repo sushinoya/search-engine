@@ -10,6 +10,11 @@ from utils import preprocess_raw_query, deserialize_dictionary, clock_and_execut
 
 '''
 Replace query terms with their corresponding postings, except for 'AND', 'OR', 'NOT'
+
+Eg. 
+Input: ['A', 'B', 'AND', 'C', 'OR']
+Output: [[1,3,34,46,57], [12,45,66,79,101], 'AND', [1,3,89,103,55], 'OR']
+
 '''
 def transform_postfix(postfix_expression):
     dictionary = deserialize_dictionary(dictionary_file)
@@ -21,10 +26,9 @@ def transform_postfix(postfix_expression):
     return postfix_expression
 
 '''
-Postfix: a list of post expression
-Parses the postfix_expression and get the result of the search engine
+Parses and evaluates the postfix expression and gets the result of the query
 '''
-def parse_postfix(postfix_expression):
+def parse_and_eval_postfix(postfix_expression):
     postfix_expression = transform_postfix(postfix_expression)
     operators = 'AND', 'OR', 'NOT'
     stack = []
@@ -44,7 +48,9 @@ def parse_postfix(postfix_expression):
             stack.append(token)
     return stack.pop()
 
-#get all the postings
+'''
+Get the list of all the document ids
+'''
 def get_superset():
     dictionary = deserialize_dictionary(dictionary_file)
     return get_postings_for_term('ALL_WORDS_AND_POSTINGS', dictionary, postings_file)
@@ -53,12 +59,20 @@ def usage():
     print "usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results"
 
 
-# MAIN FUNCTION
+# MAIN SEARCH FUNCTION
 def get_postings_for_queries(file_of_queries):
+
+    # List of queries as strings fom the query file
     queries = [line.rstrip('\n') for line in open(file_of_queries)]
     for query in queries:
+
+        # Stems the query and normalises some terms
         preprocessed_query = preprocess_raw_query(query)
-        output = parse_postfix(shunting_yard(preprocessed_query))
+
+        # Converts to postfix, parses postfix and evaluates it
+        output = parse_and_eval_postfix(shunting_yard(preprocessed_query))
+        
+        # Write the result to the output file
         with open(file_of_output, 'a') as file:
             file.write(' '.join(map(str, output)) + '\n')
     
