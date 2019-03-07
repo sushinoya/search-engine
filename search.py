@@ -6,7 +6,7 @@ import pickle
 from time import time
 from shunting_yard import shunting_yard
 from postings_eval import evaluate_not, evaluate_or, evaluate_and
-from utils import deserialize_dictionary, clock_and_execute, get_postings_for_term, stem
+from utils import preprocess_raw_query, deserialize_dictionary, clock_and_execute, get_postings_for_term, preprocess_raw_word
 
 '''
 Replace query terms with their corresponding postings, except for 'AND', 'OR', 'NOT'
@@ -17,12 +17,12 @@ def transform_postfix(postfix_expression):
     for i in range(len(postfix_expression)):
         if postfix_expression[i] not in operators:
             postfix_expression[i] = \
-                get_postings_for_term(stem(postfix_expression[i]), dictionary, postings_file)
+                get_postings_for_term(preprocess_raw_word(postfix_expression[i]), dictionary, postings_file)
     return postfix_expression
 
 '''
-postfix: a list of post expression
-parses the postfix_expression and get the result of the search engine
+Postfix: a list of post expression
+Parses the postfix_expression and get the result of the search engine
 '''
 def parse_postfix(postfix_expression):
     postfix_expression = transform_postfix(postfix_expression)
@@ -47,7 +47,7 @@ def parse_postfix(postfix_expression):
 #get all the postings
 def get_superset():
     dictionary = deserialize_dictionary(dictionary_file)
-    return get_postings_for_term('', dictionary, postings_file)
+    return get_postings_for_term('ALL_WORDS_AND_POSTINGS', dictionary, postings_file)
     
 def usage():
     print "usage: " + sys.argv[0] + " -d dictionary-file -p postings-file -q file-of-queries -o output-file-of-results"
@@ -57,10 +57,11 @@ def usage():
 def get_postings_for_queries(file_of_queries):
     queries = [line.rstrip('\n') for line in open(file_of_queries)]
     for query in queries:
-        output = parse_postfix(shunting_yard(query))
+        preprocessed_query = preprocess_raw_query(query)
+        output = parse_postfix(shunting_yard(preprocessed_query))
         with open(file_of_output, 'a') as file:
             file.write(' '.join(map(str, output)) + '\n')
-
+    
 if __name__ == "__main__":
     dictionary_file = postings_file = file_of_queries = output_file_of_results = None
         
