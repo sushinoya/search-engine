@@ -23,7 +23,7 @@ def index(input_directory, output_file_dictionary, output_file_postings):
 
     # Generates a file of human readable postings and occurences. Maily used for debugging
     # Each line is of the format: `word`: num_of_occurences -> `[2, 10, 34, ...]` (postings list)
-    generate_occurences_file(dictionary)
+    # generate_occurences_file(dictionary)  # Uncomment the next line if needed for debugging
 
     # Saves the postings file and dictionary file to disk
     process_dictionary(dictionary, output_file_dictionary, output_file_postings)
@@ -33,23 +33,32 @@ def process_dictionary(dictionary, output_file_dictionary, output_file_postings)
     save_to_disk(dictionary_to_be_saved, output_file_dictionary)
 
 '''
-Save the postings to file and generate the dictionary to be saved later
+This function saves the postings to the postings file.
+It also generates the dictonary of object which will be stored later in the
+dictionary file.
+
+The structure of this dictionary is { word: (byte_offset, data_chunk_size) }
+
+Byte offset and data chunk size allow us to retrive the postings for a given word
+relatively fast from the postings file because we can seek to the relevant bytes
+and only load those into the program.
 '''
 def save_to_postings_and_generate_dictionary(dictionary, output_file_postings):
     dictionary_to_be_saved = {}
     current_pointer = 0
     with open(output_file_postings, 'w') as f:
         for k, v in dictionary.iteritems():
-            sorted_posting = sorted(list(v))
-            f.write(pickle.dumps(sorted_posting)) #use pickle to save the posting and write to it
+            sorted_posting = sorted(list(v)) # v here is a set of document ids
+            f.write(pickle.dumps(sorted_posting)) # Use pickle to save the posting and write to it
             byte_size = f.tell() - current_pointer
             dictionary_to_be_saved[k] = (current_pointer, byte_size)
             current_pointer = f.tell()
     
     return dictionary_to_be_saved
 
+
 '''
-Process a file and return a list of all terms in that file
+Process a file and return a list of all terms in that file.
 '''
 def process_file(input_directory, file):
     with open(os.path.join(input_directory, file), 'r') as content_file:
@@ -59,7 +68,8 @@ def process_file(input_directory, file):
 
 
 '''
-Process a text and return a list of all terms in that text
+Process a text and return a list of all terms in that text.
+The terms are normalised and stemmed. 
 '''
 def process_text(text):
     sentences = nltk.sent_tokenize(text)
@@ -79,7 +89,7 @@ def process_sentence(sentence):
 
 
 '''
-Stems a word with the required stemmer
+Processes the word with operations such as stemming
 '''
 def process_word(word): 
     return preprocess_raw_word(word)
